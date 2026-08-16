@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extentreports>
+    <configuration>
+        <theme>STANDARD</theme>
+        <encoding>UTF-8</encoding>
+        <protocol>HTTPS</protocol>
+        <documentTitle>SauceDemo Cucumber Report</documentTitle>
+        <reportName>BDD Test Execution Report</reportName>
+        <timestampFormat>yyyy-MM-dd HH:mm:ss</timestampFormat>
+    </configuration>
+</extentreports>
