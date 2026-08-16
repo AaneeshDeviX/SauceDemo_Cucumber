@@ -1,0 +1,61 @@
+name: UI Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+  schedule:
+    - cron: '30 0 * * 1'
+
+jobs:
+  build:
+    name: Compile
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+      - run: mvn -B test-compile
+
+  test:
+    name: Selenium + Cucumber (headless Chrome)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+          cache: maven
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      # config.properties already sets headless=true; screen recording is
+      # disabled here because there is no display to capture on a CI runner.
+      - name: Run suite
+        run: mvn -B test -Dheadless=true -Drecord.video=false
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            target/cucumber-reports/
+            reports/
+            screenshots/
+            target/surefire-reports/
+          retention-days: 14
+          if-no-files-found: ignore
